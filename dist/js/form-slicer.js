@@ -16,8 +16,8 @@ var FormSlicer = function () {
         _classCallCheck(this, FormSlicer);
 
         this.form = config.form ? config.form : '#fslicer';
-        this.next = config.next ? config.next : 'next';
-        this.prev = config.prev ? config.prev : 'previous';
+        this.next_button = config.next ? config.next : 'next';
+        this.prev_button = config.prev ? config.prev : 'previous';
         this.generate();
     }
 
@@ -50,7 +50,7 @@ var FormSlicer = function () {
                         if (this.classList.contains('fs-validate')) {
                             that.next(true);
                         } else {
-                            that.next();
+                            that.next(false);
                         }
                     } else if (e.target && e.target.matches('.currentPrev')) {
                         that.prev();
@@ -67,24 +67,25 @@ var FormSlicer = function () {
     }, {
         key: 'createButtons',
         value: function createButtons() {
-            var fieldsets_selector = this.form + 'fieldset';
+            var fieldsets_selector = this.form + ' fieldset';
             var fieldsets = document.querySelectorAll(fieldsets_selector);
+            var that = this;
             var fieldset_arr = Array.from(fieldsets).forEach(function (element) {
                 var prev = document.createElement('button');
                 prev.classList.add('prev', 'bgt');
-                prev.textContent = 'previous';
+                prev.textContent = that.prev_button;
                 prev.type = 'button';
 
                 var next = document.createElement('button');
                 next.classList.add('next', 'bgt');
-                next.textContent = 'next';
+                next.textContent = that.next_button;
                 next.type = 'button';
 
                 if (element.previousElementSibling && element.nextElementSibling) {
                     element.appendChild(prev);
                     element.appendChild(next);
                 } else if (element.nextElementSibling) {
-                    next.classList.add('atualNext');
+                    next.classList.add('currentNext');
                     element.appendChild(next);
                 } else if (element.previousElementSibling) {
                     element.appendChild(prev);
@@ -93,7 +94,9 @@ var FormSlicer = function () {
         }
     }, {
         key: 'next',
-        value: function next(validate) {
+        value: function next() {
+            var validate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
             var current_button = document.getElementsByClassName('currentNext')[0];
 
             // Uses the validate function to check the inputs and release the button
@@ -104,11 +107,11 @@ var FormSlicer = function () {
             // }
             current_button.parentElement.style.display = 'none';
             current_button.parentElement.nextElementSibling.style.display = 'block';
-            if (lastChildNextParent(current_button).classList.contains('next')) {
-                lastChildNextParent(current_button).previousElementSibling.classList.add('currentPrev');
-                lastChildNextParent(current_button).classList.add('currentNext');
+            if (this.lastChildNextParent(current_button).classList.contains('next')) {
+                this.lastChildNextParent(current_button).previousElementSibling.classList.add('currentPrev');
+                this.lastChildNextParent(current_button).classList.add('currentNext');
             } else {
-                lastChildNextParent(current_button).classList.add('currentPrev');
+                this.lastChildNextParent(current_button).classList.add('currentPrev');
             }
             current_button.parentNode.lastChild.previousElementSibling.classList.remove('currentPrev');
             current_button.classList.remove('currentNext');
@@ -117,12 +120,12 @@ var FormSlicer = function () {
         key: 'prev',
         value: function prev() {
             // Previous
-            var current_button = document.getElementsByClassName('atualPrev')[0];
+            var current_button = document.getElementsByClassName('currentPrev')[0];
             current_button.parentElement.style.display = 'none';
             current_button.parentElement.previousElementSibling.style.display = 'block';
             if (this.lastChildPreviousParent(current_button).previousElementSibling.classList.contains('prev')) {
 
-                this.lastChildPreviousParent(current_button).previousElementSibling.classList.add('atualPrev');
+                this.lastChildPreviousParent(current_button).previousElementSibling.classList.add('currentPrev');
                 this.lastChildPreviousParent(current_button).classList.add('currentNext');
             } else {
                 this.lastChildPreviousParent(current_button).classList.add('currentNext');
@@ -133,7 +136,7 @@ var FormSlicer = function () {
     }, {
         key: 'lastChildNextParent',
         value: function lastChildNextParent(current_button) {
-            return botaoAtual.parentNode.nextElementSibling.lastChild;
+            return current_button.parentNode.nextElementSibling.lastChild;
         }
     }, {
         key: 'lastChildPreviousParent',

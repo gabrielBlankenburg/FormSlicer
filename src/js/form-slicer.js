@@ -8,8 +8,8 @@ class FormSlicer{
     */
     constructor(config = {form: '#fslicer', next: 'next', prev: 'previous'}){
         this.form = config.form ? config.form : '#fslicer';
-        this.next = config.next ? config.next : 'next';
-        this.prev = config.prev ? config.prev : 'previous';
+        this.next_button = config.next ? config.next : 'next';
+        this.prev_button = config.prev ? config.prev : 'previous';
         this.generate();
     }
 
@@ -38,7 +38,7 @@ class FormSlicer{
                     if (this.classList.contains('fs-validate')) {
                         that.next(true);
                     } else {
-                        that.next();
+                        that.next(false);
                     }
                 } else if (e.target && e.target.matches('.currentPrev')){
                     that.prev();
@@ -52,25 +52,26 @@ class FormSlicer{
     * the first "next" button gets the class currentNext
     */
     createButtons(){
-        const fieldsets_selector = this.form + 'fieldset';
+        const fieldsets_selector = this.form + ' fieldset';
         const fieldsets = document.querySelectorAll(fieldsets_selector);
+        const that = this;
         const fieldset_arr = Array.from(fieldsets)
             .forEach(element => {
                 let prev = document.createElement('button');
                 prev.classList.add('prev', 'bgt');
-                prev.textContent = 'previous';
+                prev.textContent = that.prev_button;
                 prev.type = 'button';
 
                 let next = document.createElement('button');
                 next.classList.add('next', 'bgt')
-                next.textContent = 'next';
+                next.textContent = that.next_button;
                 next.type = 'button';
 
                 if (element.previousElementSibling && element.nextElementSibling) {
                     element.appendChild(prev);
                     element.appendChild(next);
                 } else if (element.nextElementSibling) {
-                    next.classList.add('atualNext');
+                    next.classList.add('currentNext');
                     element.appendChild(next);
                 } else if (element.previousElementSibling) {
                     element.appendChild(prev);
@@ -78,7 +79,7 @@ class FormSlicer{
             });
     }
 
-    next(validate){
+    next(validate = false){
         let current_button = document.getElementsByClassName('currentNext')[0];
         
         // Uses the validate function to check the inputs and release the button
@@ -89,11 +90,11 @@ class FormSlicer{
         // }
         current_button.parentElement.style.display = 'none';
         current_button.parentElement.nextElementSibling.style.display = 'block';
-        if (lastChildNextParent(current_button).classList.contains('next')) {
-            lastChildNextParent(current_button).previousElementSibling.classList.add('currentPrev');
-            lastChildNextParent(current_button).classList.add('currentNext');
+        if (this.lastChildNextParent(current_button).classList.contains('next')) {
+            this.lastChildNextParent(current_button).previousElementSibling.classList.add('currentPrev');
+            this.lastChildNextParent(current_button).classList.add('currentNext');
         } else {
-            lastChildNextParent(current_button).classList.add('currentPrev');
+            this.lastChildNextParent(current_button).classList.add('currentPrev');
         }
         current_button.parentNode.lastChild.previousElementSibling.classList.remove('currentPrev');
         current_button.classList.remove('currentNext');
@@ -101,14 +102,14 @@ class FormSlicer{
 
     prev(){
         // Previous
-        let current_button = document.getElementsByClassName('atualPrev')[0];
+        let current_button = document.getElementsByClassName('currentPrev')[0];
         current_button.parentElement.style.display = 'none';
         current_button.parentElement.previousElementSibling.style.display = 'block';
         if (this.lastChildPreviousParent(current_button).previousElementSibling.classList.contains('prev')) {
 
             this.lastChildPreviousParent(current_button)
                 .previousElementSibling.classList
-                .add('atualPrev');
+                .add('currentPrev');
             this.lastChildPreviousParent(current_button).classList.add('currentNext');
 
         } else {
@@ -119,7 +120,7 @@ class FormSlicer{
     }
 
     lastChildNextParent(current_button){
-        return botaoAtual.parentNode.nextElementSibling.lastChild;
+        return current_button.parentNode.nextElementSibling.lastChild;
     }
 
     lastChildPreviousParent(current_button){
