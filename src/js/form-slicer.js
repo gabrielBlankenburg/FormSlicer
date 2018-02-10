@@ -79,6 +79,16 @@ class FormSlicer{
             });
     }
 
+    /** 
+    * Recognizes the first "next" button, sets the fieldset (parent) as none
+    * and gets the next fieldset sibling adding block property
+    * 
+    * If the last element of the next fieldset is also a button that has the "next" class
+    * it adds the class "currentNext" on it.
+    * If it doesn't have a button before (prev) it adds class "currentPrev"
+    * If there is not any other "next" it adds the class "currentPrev"
+    * 
+    */
     next(validate = false){
         let current_button = document.getElementsByClassName('currentNext')[0];
         
@@ -100,6 +110,16 @@ class FormSlicer{
         current_button.classList.remove('currentNext');
     }
 
+    /** not: 
+    * Recognizes the first button currentPrev, sets the fieldset(parent) as display:none 
+    * gets the next fieldset sibling of the parent and adds block property
+    * 
+    * At the if statement it gets the parent then gets the last element equals to the parent 
+    * before it, searches the last child, gets the last sibling and check if it is next or prev
+    * the big deal here is to keep the currentNext and when the previous is done
+    * but it is solved at the else statment that checks if it has a sibling to the last child
+    * 
+    */
     prev(){
         // Previous
         let current_button = document.getElementsByClassName('currentPrev')[0];
